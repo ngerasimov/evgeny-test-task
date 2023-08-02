@@ -51,6 +51,11 @@ class SimulateCommand extends Command
 
         if ($input->getOption('no-realtime') && !$input->getOption('realtime')) {
             $this->generator->setIsRealtime(false);
+            /**
+             * in no-realtime mode simulation starts from 'length' second BEFORE the current moment
+             * and respectively ends up right to the current moment
+             * (to prevent creation of the 'future' data rows)
+             */
             $this->generator->setCurrentTimestamp($this->generator->getCurrentTimestamp() - $this->simulationLength);
         }
 
@@ -58,20 +63,33 @@ class SimulateCommand extends Command
             $this->generator->setIsRealtime(true);
         }
 
+        /**
+         * loading current modules and measurements data from db
+         */
         $moduleEntities = $this->moduleRepository->findAll();
         foreach ($moduleEntities as $moduleEntity) {
             $this->generator->addModule($moduleEntity);
         }
 
+        // for progress displaying only
         $this->tsStart = $this->generator->getCurrentTimestamp();
 
+        // start simulation
         $this->generator->start($this->simulationLength);
 
+        // new line after progress indication
         $output->writeln('');
 
         return Command::SUCCESS;
     }
 
+    /**
+     * progress indicator
+     * updates simulation progress on each Event raised in MeasurementGenerator
+     *
+     * @param Event $event
+     * @return void
+     */
     #[AsEventListener]
     public function logStep(Event $event)
     {

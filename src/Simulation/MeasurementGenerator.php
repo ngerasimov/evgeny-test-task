@@ -26,27 +26,37 @@ class MeasurementGenerator
         private bool $isRealtime,
     )
     {
+        /**
+         * initializing to current timestamp
+         * but it will be corrected when it runs in no-realtime mode
+         */
         $this->currentTimestamp = time();
     }
 
-    public function addModule(\App\Entity\Module $moduleEntity)
+    public function addModule(\App\Entity\Module $moduleEntity): void
     {
         $moduleCode = $moduleEntity->getCode() ?? '';
 
+        // list of measurement codes
         $measurements = array_map(fn($e) => $e->getCode(), $moduleEntity->getMeasureTypes()->toArray());
 
+        // module must have attached measurements for values generation
         if (!$measurements) {
             return;
         }
 
+        // creating simulation model from db entity
         $module = new Module($moduleCode, $this, ...$this->getModuleParams($moduleCode));
 
+        // as a fact here is initializing of operate/breakdown
+        // events sequence for the model
         $this->scheduleInitModule($module);
 
         foreach ($measurements as $measureCode) {
 
             $measure = new Measure($measureCode ?? '', $module, $this, ...$this->getMeasureParams($measureCode));
 
+            // here is initializing of value-events sequence for each measurement of the model
             $this->scheduleInitMeasure($measure);
 
         }
@@ -61,6 +71,14 @@ class MeasurementGenerator
         }
     }
 
+    /**
+     * main event loop
+     * there're no need of for/while statements
+     * thanks to native Symfony event dispatching functionality
+     *
+     * @param Event $event
+     * @return void
+     */
     #[AsEventListener]
     public function step(Event $event): void
     {
@@ -97,11 +115,13 @@ class MeasurementGenerator
         if ($measure instanceof Measure) {
             switch ($event->getType()) {
 
+                // start of the tick sequence
                 case Event::TYPE_INIT_MEASURE:
                     $this->scheduleTick($measure);
 
                     break;
 
+                // send signal to persist current tick and schedule next  one
                 case Event::TYPE_TICK:
                     $this->scheduleTick($measure);
                     $value = $measure->getValue();
@@ -119,12 +139,15 @@ class MeasurementGenerator
         if ($module instanceof Module) {
             switch ($event->getType()) {
 
+                // start of the on/off state sequence
                 case Event::TYPE_INIT_MODULE:
                     $this->scheduleBreakdown($module);
                     $this->bus->dispatch(new SendModuleStateMessage($module->getCode(), 'operate', $this->currentTimestamp));
 
                     break;
 
+                // send signal to persist current ON-state and schedule next one
+                // also reschedule tick events
                 case Event::TYPE_RESTORE:
                     $module->setIsOperable(true);
                     $this->scheduleBreakdown($module);
@@ -139,6 +162,7 @@ class MeasurementGenerator
                     }
                     break;
 
+                // send signal to persist current OFF-state and schedule next one
                 case Event::TYPE_BREAKDOWN:
                     $module->setIsOperable(false);
                     $this->scheduleRestore($module);

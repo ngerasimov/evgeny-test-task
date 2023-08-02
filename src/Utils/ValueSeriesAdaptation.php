@@ -4,7 +4,8 @@ namespace App\Utils;
 
 
 /**
- *
+ * Interpolation of measured values series for the chart displaying
+ * See docs/implementation.md for details
  */
 class ValueSeriesAdaptation
 {

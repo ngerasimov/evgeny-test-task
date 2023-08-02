@@ -19,7 +19,6 @@ final class MeasureTypeAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $filter
-            ->add('id')
             ->add('name')
             ->add('code')
             ->add('units')
@@ -44,7 +43,6 @@ final class MeasureTypeAdmin extends AbstractAdmin
     protected function configureFormFields(FormMapper $form): void
     {
         $form
-            ->add('id')
             ->add('name')
             ->add('code')
             ->add('units')

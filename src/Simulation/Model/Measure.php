@@ -4,6 +4,9 @@ namespace App\Simulation\Model;
 
 use App\Simulation\MeasurementGenerator;
 
+/**
+ * See docs/implementation.md for details
+ */
 class Measure
 {
     private int $stageTsBegin;

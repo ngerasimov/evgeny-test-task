@@ -4,6 +4,9 @@ namespace App\Simulation;
 
 use App\Simulation\Model\Event;
 
+/**
+ * Just simulation events ordered by timestamp
+ */
 class EventQueue
 {
     public function __construct()

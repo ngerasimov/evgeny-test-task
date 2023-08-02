@@ -13,6 +13,8 @@ use Tests\Utils\DateIntervalAggregationsTest;
 class DateIntervalAggregations
 {
     /**
+     * On/Off states stats calculation
+     *
      * @param array<StateHistory> $stateHistory
      * @return array
      */

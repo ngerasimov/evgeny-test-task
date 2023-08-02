@@ -22,9 +22,20 @@ By default simulator runs in real-time mode for 10 minutes. See `php bin/console
 
 Try to refresh website main page while simulator runs!
 
+## Shutting down
+In project root: `make down`
+
+Or, to remove all internal data: `make wipe`
+
+## Launching without (re)building
+In project root: `make up`
+
 ## Code style quality
 In project root 
 
 `make psalm`
 
 `make csfix`
+
+## Implementation details
+[docs/implementation.md](docs/implementation.md)
