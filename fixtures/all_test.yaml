@@ -1,0 +1,6 @@
+include:
+  - state.yaml
+  - measure_type.yaml
+  - module.yaml
+  - state_history.yaml
+  - measured_value.yaml

@@ -1,0 +1,9 @@
+App\Entity\StateHistory:
+  module_phone.state_operate{1..3}:
+    module: '@module.phone'
+    state: '@state.operate'
+    datetime: <(new \Carbon\Carbon('-' . ($current*30 - 15) . 'sec'))>
+  module_phone.state_breakdown{1..3}:
+    module: '@module.phone'
+    state: '@state.breakdown'
+    datetime: <(new \Carbon\Carbon('-' . ($current*30) . 'sec'))>

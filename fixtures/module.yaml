@@ -1,0 +1,29 @@
+App\Entity\Module:
+  module.fridge:
+    name: fridge
+    code: fridge
+    measureTypes:
+      - '@measure_type.freezer_temp'
+      - '@measure_type.chamber_temp'
+  module.iron:
+    name: iron
+    code: iron
+    measureTypes:
+      - '@measure_type.heating_temp'
+  module.phone:
+    name: phone
+    code: phone
+    measureTypes:
+      - '@measure_type.signal_strength'
+      - '@measure_type.charge_level'
+  module.tv:
+    name: tv
+    code: tv
+    measureTypes:
+      - '@measure_type.volume'
+  module.vc_robot:
+    name: vacuum cleaner robot
+    code: vc_robot
+    measureTypes:
+      - '@measure_type.bunker_capacity'
+      - '@measure_type.charge_level'

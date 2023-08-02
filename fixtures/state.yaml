@@ -1,0 +1,9 @@
+App\Entity\State:
+  state.operate:
+    name: operate
+    code: operate
+    isOperable: true
+  state.breakdown:
+    name: breakdown
+    code: breakdown
+    isOperable: false

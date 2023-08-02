@@ -1,0 +1,66 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $isRealtime: '%env(IS_SIMULATION_REALTIME)%'
+            $simulationLength: '%env(SIMULATION_LENGTH_SEC)%'
+            $measureParams:
+                default:
+                    valueMin: '%env(MEASURE_DEFAULT_VALUE_MIN)%'
+                    valueMax: '%env(MEASURE_DEFAULT_VALUE_MAX)%'
+                    tickPeriod: '%env(MEASURE_DEFAULT_TICK_SEC)%'
+                    stageDuration: '%env(MEASURE_DEFAULT_STAGE_DURATION)%'
+            $moduleParams:
+                default:
+                    breakdownPeriod: '%env(MODULE_DEFAULT_BREAKDOWN_PERIOD)%'
+                    breakdownDuration: '%env(MODULE_DEFAULT_BREAKDOWN_DURATION)%'
+            $chartTimeStep: '%env(int:CHART_TIME_STEP)%'
+            $chartTimeLength: '%env(int:CHART_TIME_LENGTH)%'
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Message/'
+            - '../src/Model/'
+            - '../src/Utils/'
+            - '../src/Simulation/Model/'
+            - '../src/Kernel.php'
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    admin.module:
+        class: App\Admin\ModuleAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\Module, controller: App\Controller\ModuleAdminController, manager_type: orm, group: admin, label: Module }
+
+    admin.measure_type:
+        class: App\Admin\MeasureTypeAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\MeasureType, manager_type: orm, group: admin, label: MeasureType }
+
+    admin.state:
+        class: App\Admin\StateAdmin
+        tags:
+            - { name: sonata.admin, model_class: App\Entity\State, manager_type: orm, group: admin, label: State }
+
+when@dev:
+    services:
+        Nelmio\Alice\Loader\NativeLoader: ~
+
+when@test:
+    services:
+        Nelmio\Alice\Loader\NativeLoader: ~

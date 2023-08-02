@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Module index{% endblock %}
+
+{% block body %}
+    <h1>Module index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th rowspan="2">Code</th>
+                <th rowspan="2">Name</th>
+                <th rowspan="2">State</th>
+                <th rowspan="2">Operating</th>
+                <th colspan="4">Measures</th>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+                <th>First</th>
+                <th>Last</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for module in modules %}
+            {% set rowspan = '' %}
+            {% if module.availableMeasures|length > 1 %}
+                {% set rowspan = ' rowspan="' ~ module.availableMeasures|length ~ '"' %}
+            {% endif %}
+
+            <tr>
+                <td{{ rowspan | raw }}>{{ module.code }}</td>
+                <td{{ rowspan | raw }}>{{ module.name }}</td>
+                <td{{ rowspan | raw }}><span class="{{ (module.currentState.isOperable ?? true) ? '' : 'btn btn-warning' }}">{{ module.currentState.name ?? 'n/a' }}</span></td>
+                <td{{ rowspan | raw }}>
+                    <div class="container-fluid">
+                        {% for stateId, interval in module.historyLength %}
+                            <div class="row">
+                                <div class="col">
+                                    {{ states[stateId].code ?? 'total' }}:
+                                    {% set format = interval.days ? '%ad %H:%I:%S' : '%H:%I:%S' %}
+                                    {{ interval.format(format) }}
+                                </div>
+                            </div>
+                        {% else %}
+                            n/a
+                        {% endfor %}
+                    </div>
+                </td>
+                {% for measure in module.availableMeasures %}
+                    {% if loop.first %}
+                        <td><a class="btn btn-info" href="{{ path('app_module_show', {id: module.id, measureType: measure.id, begin: measure.first, end: measure.last}) }}">{{ measure.name }}</a></td>
+                        <td>{{ measure.count }}</td>
+                        <td>{{ measure.first.format('H:i:s') }}</td>
+                        <td>{{ measure.last.format('H:i:s') }}</td>
+                    {% endif %}
+                {% else %}
+                    <td colspan="4">n/a</td>
+                {% endfor %}
+            </tr>
+            {% if module.availableMeasures|length > 1 %}
+                {% for measure in module.availableMeasures %}
+                    {% if not loop.first %}
+                        <tr>
+                            <td><a class="btn btn-info" href="{{ path('app_module_show', {'id': module.id, 'measureType': measure.id, begin: measure.first, end: measure.last}) }}">{{ measure.name }}</a></td>
+                            <td>{{ measure.count }}</td>
+                            <td>{{ measure.first.format('H:i:s') }}</td>
+                            <td>{{ measure.last.format('H:i:s') }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-info" href="{{ path('sonata_admin_dashboard') }}">Manage</a>
+{% endblock %}

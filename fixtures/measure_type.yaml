@@ -1,0 +1,32 @@
+App\Entity\MeasureType:
+  measure_type.freezer_temp:
+    name: Freezer temperature
+    code: freezer_temp
+    units: '℃'
+  measure_type.chamber_temp:
+    name: Cooling chamber temperature
+    code: chamber_temp
+    units: '℃'
+  measure_type.heating_temp:
+    name: Heating temperature
+    code: heating_temp
+    units: '℃'
+  measure_type.signal_strength:
+    name: Cellurar signal strength
+    code: signal_strength
+    units: dB
+  measure_type.volume:
+    name: Volume
+    code: volume
+    units: dB
+  measure_type.bunker_capacity:
+    name: Bunker capacity
+    code: bunker_capacity
+    units: '%'
+  measure_type.charge_level:
+    name: Charge level
+    code: charge_level
+    units: '%'
+
+
+

@@ -1,0 +1,81 @@
+version: '3'
+
+x-php-defaults: &php-defaults
+  working_dir: "/var/www/html"
+  volumes:
+    - ".docker/php-fpm/ini/php.ini:/usr/local/etc/php/php.ini:ro"
+    - ".:/var/www/html:rw"
+  build:
+    context: .
+    dockerfile: .docker/php-fpm/Dockerfile
+  environment:
+    APP_ENV: "dev"
+    COMPOSER_MEMORY_LIMIT: -1
+  depends_on:
+    - db
+    - rabbitmq
+
+services:
+
+  php:
+    container_name: php_webreathe
+    <<: *php-defaults
+    restart: always
+
+  php-xdebug:
+    <<: *php-defaults
+    environment:
+      PHP_IDE_CONFIG: "serverName=webreathe"
+      APP_ENV: "dev"
+    container_name: php_xdebug_webreathe
+    build:
+      context: .
+      dockerfile: .docker/php-fpm/Dockerfile.xdebug
+    extra_hosts:
+      - "host.docker.internal:172.17.0.1"
+
+  db:
+    image: mysql:5.7
+    container_name: mysql_webreathe
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app_password
+    volumes:
+      - .docker/mysql/init:/docker-entrypoint-initdb.d
+      - mydata:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  nginx:
+    restart: always
+    container_name: nginx_webreathe
+    working_dir: "/var/www/html"
+    build:
+      context: .
+      dockerfile: .docker/nginx/Dockerfile
+    volumes:
+      - "${PWD}/public:/var/www/html/public:ro"
+      - "${PWD}/.docker/nginx/conf.d:/etc/nginx/conf.d:ro"
+    ports:
+      - 80:80
+    depends_on:
+      - php
+
+  rabbitmq:
+    restart: always
+    container_name: rabbit_webreathe
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  worker_main:
+    <<: *php-defaults
+    container_name: app_worker_webreathe
+    entrypoint: [ "deploy/start_worker.sh" ]
+    restart: always
+    command: async
+
+volumes:
+  mydata:

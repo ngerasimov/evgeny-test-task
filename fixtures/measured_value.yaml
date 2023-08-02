@@ -1,0 +1,11 @@
+App\Entity\MeasuredValue:
+  module_phone.measure_signal{1..100}:
+    module: '@module.phone'
+    type: '@measure_type.signal_strength'
+    value: <(rand(10,1000)/11)>
+    datetime: <(new \Carbon\Carbon('-' . ($current*2-1) . 'sec'))>
+  module_phone.measure_charge{1..100}:
+    module: '@module.phone'
+    type: '@measure_type.charge_level'
+    value: <(rand(10,1000)/11)>
+    datetime: <(new \Carbon\Carbon('-' . ($current*2) . 'sec'))>
