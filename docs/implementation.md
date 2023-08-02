@@ -56,7 +56,7 @@ virtual (no-realtime). In realtime mode there is a full mimic of some device tha
 In virtual mode bulk generating of values set for the given time period is performed without reference to the real time. Simulation time start from the past to prevent generation of the 'future' event/state values. 
 
 ## Algorithm 
-Implemented in `App\Simulation\Model\Measure`
+Implemented in `App\Simulation\Model\Measure` and `App\Simulation\Model\Module`
 
 To create not much dispersed value series it applies some kind of smoothing. First, the time line is divided on 'stages'. Length of the stage in seconds is set by `MEASURE_DEFAULT_STAGE_DURATION` parameter and it is larger than measuremet-value generation time interval. For each new stage time point a new reference-value is generated randomly in range given by `MEASURE_DEFAULT_VALUE_MIN` and `MEASURE_DEFAULT_VALUE_MAX` parameters.
 
