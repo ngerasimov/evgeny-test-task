@@ -24,5 +24,7 @@ Try to refresh website main page while simulator runs!
 
 ## Code style quality
 In project root 
+
 `make psalm`
+
 `make csfix`
